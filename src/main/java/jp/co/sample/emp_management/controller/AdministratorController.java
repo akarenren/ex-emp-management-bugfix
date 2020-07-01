@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,12 +76,14 @@ public class AdministratorController {
 			, RedirectAttributes redirectAttributes
 			, Model model) {
 		
-//		if(!(form.getPassword().equals(form.getConfPassword()))) {
-//			model.addAttribute("passMessage", "入力したパスワードと一致しません");
-//			return toInsert(model);
-//		}
-		
 		if(result.hasErrors()) {
+			return toInsert(model);
+		}
+		
+		Administrator returnAdministrator = administratorService.findByMailAddress(form.getMailAddress());
+		if(!(returnAdministrator == null)) {
+			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
+			result.addError(fieldError);
 			return toInsert(model);
 		}
 		
