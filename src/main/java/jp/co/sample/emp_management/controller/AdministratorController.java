@@ -75,6 +75,11 @@ public class AdministratorController {
 			, RedirectAttributes redirectAttributes
 			, Model model) {
 		
+//		if(!(form.getPassword().equals(form.getConfPassword()))) {
+//			model.addAttribute("passMessage", "入力したパスワードと一致しません");
+//			return toInsert(model);
+//		}
+		
 		if(result.hasErrors()) {
 			return toInsert(model);
 		}
