@@ -57,6 +57,12 @@
 
 		<!-- table -->
 		<div class="row">
+			<form th:action="@{/employee/search}" method="post">
+				<label for="name">従業員検索</label>
+				<input id="name" type="text" name="name">
+				<button>検索</button>
+			</form>
+			<div th:text="${message}"></div>
 			<div
 				class="table-responsive col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12">
 

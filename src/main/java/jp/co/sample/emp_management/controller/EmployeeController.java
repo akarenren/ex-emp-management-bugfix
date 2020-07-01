@@ -94,4 +94,28 @@ public class EmployeeController {
 		employeeService.update(employee);
 		return "redirect:/employee/showList";
 	}
+	
+	/**
+	 * 従業員検索機能.
+	 * 
+	 * @param name：従業員名
+	 * @param model：モデル
+	 * @return　従業員検索結果画面
+	 */
+	@RequestMapping("/search")
+	public String search(String name, Model model) {
+		if("".equals(name)) {
+			return showList(model);
+		}
+		
+		List<Employee> employeeList = employeeService.search(name);
+		
+		if(employeeList.size() == 0) {
+			model.addAttribute("message", "１件もありませんでした");
+		}
+		model.addAttribute("employeeList", employeeList);
+		return "employee/list";
+		
+		
+	}
 }

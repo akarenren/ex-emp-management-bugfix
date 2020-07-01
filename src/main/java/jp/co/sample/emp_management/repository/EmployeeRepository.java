@@ -50,7 +50,7 @@ public class EmployeeRepository {
 	 * @return 全従業員一覧 従業員が存在しない場合はサイズ0件の従業員一覧を返します
 	 */
 	public List<Employee> findAll() {
-		String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count FROM employees ORDER BY hire_date DESC";
+		String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count FROM employees ORDER BY hire_date DESC;";
 
 		List<Employee> developmentList = template.query(sql, EMPLOYEE_ROW_MAPPER);
 
@@ -82,5 +82,20 @@ public class EmployeeRepository {
 
 		String updateSql = "UPDATE employees SET dependents_count=:dependentsCount WHERE id=:id";
 		template.update(updateSql, param);
+	}
+	
+	/**
+	 * 従業員検索.
+	 * 
+	 * @param name 従業員名
+	 * @return　入力された名前に該当する従業員
+	 */
+	public List<Employee> search(String name) {
+		String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone"
+				+ ",salary,characteristics,dependents_count FROM employees "
+				+ "WHERE name LIKE :name ORDER BY hire_date DESC;";
+		
+		SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + name + "%");
+		return template.query(sql, param, EMPLOYEE_ROW_MAPPER);
 	}
 }
