@@ -112,6 +112,7 @@ public class EmployeeController {
 		
 		if(employeeList.size() == 0) {
 			model.addAttribute("message", "１件もありませんでした");
+			return showList(model);
 		}
 		model.addAttribute("employeeList", employeeList);
 		return "employee/list";
