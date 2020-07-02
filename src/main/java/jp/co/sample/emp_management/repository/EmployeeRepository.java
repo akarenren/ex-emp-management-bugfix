@@ -90,7 +90,7 @@ public class EmployeeRepository {
 	 * @param name 従業員名
 	 * @return　入力された名前に該当する従業員
 	 */
-	public List<Employee> search(String name) {
+	public List<Employee> findByName(String name) {
 		String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone"
 				+ ",salary,characteristics,dependents_count FROM employees "
 				+ "WHERE name LIKE :name ORDER BY hire_date DESC;";

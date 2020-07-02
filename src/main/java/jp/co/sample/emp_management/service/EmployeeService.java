@@ -59,7 +59,7 @@ public class EmployeeService {
 	 * @param name 従業員名
 	 * @return　入力された名前に該当する従業員
 	 */
-	public List<Employee> search(String name) {
-		return employeeRepository.search(name);
+	public List<Employee> findByName(String name) {
+		return employeeRepository.findByName(name);
 	}
 }

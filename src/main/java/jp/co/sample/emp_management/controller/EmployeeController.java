@@ -108,7 +108,7 @@ public class EmployeeController {
 			return showList(model);
 		}
 		
-		List<Employee> employeeList = employeeService.search(name);
+		List<Employee> employeeList = employeeService.findByName(name);
 		
 		if(employeeList.size() == 0) {
 			model.addAttribute("message", "１件もありませんでした");
