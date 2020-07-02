@@ -76,16 +76,18 @@ public class AdministratorController {
 			, RedirectAttributes redirectAttributes
 			, Model model) {
 		
-		if(result.hasErrors()) {
-			return toInsert(model);
-		}
-		
 		Administrator returnAdministrator = administratorService.findByMailAddress(form.getMailAddress());
 		if(!(returnAdministrator == null)) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
 			result.addError(fieldError);
 			return toInsert(model);
 		}
+		
+		if(result.hasErrors()) {
+			return toInsert(model);
+		}
+		
+		
 		
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
