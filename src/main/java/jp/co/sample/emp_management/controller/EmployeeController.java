@@ -18,6 +18,7 @@ import jp.co.sample.emp_management.domain.Employee;
 import jp.co.sample.emp_management.form.InsertEmployeeForm;
 import jp.co.sample.emp_management.form.UpdateEmployeeForm;
 import jp.co.sample.emp_management.service.EmployeeService;
+import net.arnx.jsonic.JSON;
 
 /**
  * 従業員情報を操作するコントローラー.
@@ -44,7 +45,17 @@ public class EmployeeController {
 	}
 	
 	
-	
+	@ResponseBody
+	@RequestMapping("/autoComplete")
+	public String autoComplete() {
+		List<Employee> employeeList = employeeService.showList();
+		List<String> nameList = new ArrayList<>();
+		for(Employee employee : employeeList) {
+			nameList.add(employee.getName());
+		}
+		
+		return JSON.encode(nameList);
+	}
 	
 	/**
 	 * 従業員登録用フォーム生成.
