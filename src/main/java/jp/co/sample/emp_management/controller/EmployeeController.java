@@ -1,7 +1,7 @@
 package jp.co.sample.emp_management.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jp.co.sample.emp_management.domain.Employee;
 import jp.co.sample.emp_management.form.InsertEmployeeForm;
@@ -41,6 +42,9 @@ public class EmployeeController {
 	public UpdateEmployeeForm setUpForm() {
 		return new UpdateEmployeeForm();
 	}
+	
+	
+	
 	
 	/**
 	 * 従業員登録用フォーム生成.
@@ -155,6 +159,14 @@ public class EmployeeController {
 		//重複メールアドレスチェック
 		if(!(getEmployee == null)) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
+			result.addError(fieldError);
+		}
+		
+		String fileName = form.getImage().getOriginalFilename();
+		//ファイルの拡張子
+		String extension = fileName.substring(fileName.lastIndexOf("."));
+		if(!(".png".equals(extension)) || !(".jpg".equals(extension))) {
+			FieldError fieldError = new FieldError(result.getObjectName(), "image", ".pngか.jpegの拡張子だけ選択できます");
 			result.addError(fieldError);
 		}
 		
