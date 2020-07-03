@@ -3,6 +3,7 @@ package jp.co.sample.emp_management.repository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -43,6 +44,9 @@ public class EmployeeRepository {
 
 	@Autowired
 	private NamedParameterJdbcTemplate template;
+	
+	@Autowired
+	JdbcTemplate jdbc;
 
 	/**
 	 * 従業員一覧情報を入社日順で取得します.
@@ -97,5 +101,50 @@ public class EmployeeRepository {
 		
 		SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + name + "%");
 		return template.query(sql, param, EMPLOYEE_ROW_MAPPER);
+	}
+	
+	
+	/**
+	 * 従業員登録.
+	 * 
+	 * @param employee：従業員情報
+	 */
+	public void insert(Employee employee) {
+		String sql = "INSERT INTO employees VALUES(:id, :name, :image, :gender, :hireDate,"
+				+ " :mailAddress, :zipCode, :address, :telephone,"
+				+ " :salary, :characteristics, :dependentsCount);";
+		
+		SqlParameterSource param = new BeanPropertySqlParameterSource(employee);
+		template.update(sql, param);
+	}
+	
+	/**
+	 * メールアドレス重複検索.
+	 * 
+	 * @param mailAddress:メールアドレス
+	 * @return　従業員情報(該当なしの場合null)
+	 */
+	public Employee findByMailAddress(String mailAddress) {
+		String sql = "select id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count from employees where mail_address=:mailAddress";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("mailAddress", mailAddress);
+		List<Employee> employeeList = template.query(sql, param, EMPLOYEE_ROW_MAPPER);
+		if (employeeList.size() == 0) {
+			return null;
+		}
+		return employeeList.get(0);
+	}
+	
+	/**
+	 * 最後のid取得.
+	 * 
+	 * @return id
+	 */
+	public Integer FindLastid() {
+		String sql ="select max(id) from employees;";
+		Integer maxId = jdbc.queryForObject(sql, Integer.class);
+		if(maxId == null) {
+			return 0;
+		}
+		return maxId;
 	}
 }

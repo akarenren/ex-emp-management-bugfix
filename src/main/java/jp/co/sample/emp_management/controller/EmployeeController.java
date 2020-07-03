@@ -2,15 +2,19 @@ package jp.co.sample.emp_management.controller;
 
 import java.util.List;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jp.co.sample.emp_management.domain.Employee;
+import jp.co.sample.emp_management.form.InsertEmployeeForm;
 import jp.co.sample.emp_management.form.UpdateEmployeeForm;
 import jp.co.sample.emp_management.service.EmployeeService;
 
@@ -36,6 +40,20 @@ public class EmployeeController {
 	@ModelAttribute
 	public UpdateEmployeeForm setUpForm() {
 		return new UpdateEmployeeForm();
+	}
+	
+	/**
+	 * 従業員登録用フォーム生成.
+	 * 
+	 * @return フォーム
+	 */
+	@ModelAttribute
+	public InsertEmployeeForm setUpInsertForm() {
+		InsertEmployeeForm insertEmployeeForm = new InsertEmployeeForm();
+		insertEmployeeForm.setGender("男性");
+		return insertEmployeeForm;
+		
+		
 	}
 
 	/////////////////////////////////////////////////////
@@ -92,6 +110,7 @@ public class EmployeeController {
 		employee.setId(form.getIntId());
 		employee.setDependentsCount(form.getIntDependentsCount());
 		employeeService.update(employee);
+		
 		return "redirect:/employee/showList";
 	}
 	
@@ -118,5 +137,58 @@ public class EmployeeController {
 		return "employee/list";
 		
 		
+	}
+	
+	/**
+	 * 従業員登録フォーム.
+	 * 
+	 * @return 従業員登録画面
+	 */
+	@RequestMapping("/toInsert")
+	public String toInsert() {
+		return "employee/insert";
+	}
+	
+	
+	@RequestMapping("/insert")
+	public String insert(@Validated InsertEmployeeForm form, BindingResult result, Model model) {
+		Employee getEmployee = employeeService.findByMailAddress(form.getMailAddress());
+		if(!(getEmployee == null)) {
+			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
+			result.addError(fieldError);
+			return toInsert();
+		}
+		
+		if(result.hasErrors()) {
+			return toInsert();
+		}
+		
+		Integer nextId = employeeService.findLastId() + 1;
+		Employee employee = new Employee();
+		BeanUtils.copyProperties(form, employee);
+		
+		//画像データをBase64にエンコード
+		try {
+			StringBuffer data = new StringBuffer();
+			String base64 = new String(Base64.encodeBase64(form.getImage().getBytes()),"ASCII");
+			data.append("data:image/jpeg;base64,");
+	        data.append(base64);
+	        employee.setImage(data.toString());
+		} catch (Exception e) {
+			System.out.println("画像変換でエラー発生");
+			System.err.println("メッセージ：" + e);
+		}
+		
+		//画像のバリデーション
+		if("data:image/jpeg;base64,".equals(employee.getImage())) {
+			FieldError fieldError = new FieldError(result.getObjectName(), "image", "画像を選択してください");
+			result.addError(fieldError);
+			return toInsert();
+		}
+		
+		employee.setId(nextId);
+		employeeService.insert(employee);
+		
+		return "redirect:/employee/showList";
 	}
 }

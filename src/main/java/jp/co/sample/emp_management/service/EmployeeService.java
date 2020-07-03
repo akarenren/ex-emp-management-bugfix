@@ -62,4 +62,28 @@ public class EmployeeService {
 	public List<Employee> findByName(String name) {
 		return employeeRepository.findByName(name);
 	}
+	
+	
+	/**
+	 * 従業員登録.
+	 * 
+	 * @param employee:従業員情報
+	 */
+	public void insert(Employee employee) {
+		employeeRepository.insert(employee);
+	}
+	
+	/**
+	 * メールアドレスによる従業員検索.
+	 * 
+	 * @param mailAddress:メールアドレス
+	 * @return　従業員情報
+	 */
+	public Employee findByMailAddress(String mailAddress) {
+		return employeeRepository.findByMailAddress(mailAddress);
+	}
+	
+	public Integer findLastId() {
+		return employeeRepository.FindLastid();
+	}
 }
