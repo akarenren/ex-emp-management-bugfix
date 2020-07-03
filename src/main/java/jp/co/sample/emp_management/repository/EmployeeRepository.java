@@ -109,7 +109,7 @@ public class EmployeeRepository {
 	 * 
 	 * @param employee：従業員情報
 	 */
-	synchronized public void insert(Employee employee) {
+	public void insert(Employee employee) {
 		String sql = "INSERT INTO employees VALUES(:id, :name, :image, :gender, :hireDate,"
 				+ " :mailAddress, :zipCode, :address, :telephone,"
 				+ " :salary, :characteristics, :dependentsCount);";

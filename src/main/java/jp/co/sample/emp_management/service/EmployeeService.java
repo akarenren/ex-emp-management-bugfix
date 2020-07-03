@@ -71,7 +71,7 @@ public class EmployeeService {
 	 * 
 	 * @param employee:従業員情報
 	 */
-	public void insert(Employee employee, InsertEmployeeForm form) {
+	synchronized public void insert(Employee employee, InsertEmployeeForm form) {
 		Integer nextId = employeeRepository.FindLastid() + 1;
 		employee.setId(nextId);
 		
