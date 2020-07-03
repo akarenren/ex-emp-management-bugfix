@@ -80,7 +80,6 @@ public class AdministratorController {
 		if(!(returnAdministrator == null)) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
 			result.addError(fieldError);
-			return toInsert(model);
 		}
 		
 		if(result.hasErrors()) {

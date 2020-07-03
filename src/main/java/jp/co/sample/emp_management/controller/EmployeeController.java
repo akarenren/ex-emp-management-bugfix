@@ -2,7 +2,7 @@ package jp.co.sample.emp_management.controller;
 
 import java.util.List;
 
-import org.apache.tomcat.util.codec.binary.Base64;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -149,45 +149,30 @@ public class EmployeeController {
 		return "employee/insert";
 	}
 	
-	
 	@RequestMapping("/insert")
 	public String insert(@Validated InsertEmployeeForm form, BindingResult result, Model model) {
 		Employee getEmployee = employeeService.findByMailAddress(form.getMailAddress());
+		//重複メールアドレスチェック
 		if(!(getEmployee == null)) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にこのメールアドレスは登録されています");
 			result.addError(fieldError);
-			return toInsert();
+		}
+		
+		//画像のバリデーション
+		if(form.getImage().isEmpty()) {
+			FieldError fieldError = new FieldError(result.getObjectName(), "image", "画像を選択してください");
+			result.addError(fieldError);
 		}
 		
 		if(result.hasErrors()) {
 			return toInsert();
 		}
 		
-		Integer nextId = employeeService.findLastId() + 1;
 		Employee employee = new Employee();
 		BeanUtils.copyProperties(form, employee);
 		
-		//画像データをBase64にエンコード
-		try {
-			StringBuffer data = new StringBuffer();
-			String base64 = new String(Base64.encodeBase64(form.getImage().getBytes()),"ASCII");
-			data.append("data:image/jpeg;base64,");
-	        data.append(base64);
-	        employee.setImage(data.toString());
-		} catch (Exception e) {
-			System.out.println("画像変換でエラー発生");
-			System.err.println("メッセージ：" + e);
-		}
 		
-		//画像のバリデーション
-		if("data:image/jpeg;base64,".equals(employee.getImage())) {
-			FieldError fieldError = new FieldError(result.getObjectName(), "image", "画像を選択してください");
-			result.addError(fieldError);
-			return toInsert();
-		}
-		
-		employee.setId(nextId);
-		employeeService.insert(employee);
+		employeeService.insert(employee, form);
 		
 		return "redirect:/employee/showList";
 	}

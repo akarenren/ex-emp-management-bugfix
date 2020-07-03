@@ -2,11 +2,13 @@ package jp.co.sample.emp_management.service;
 
 import java.util.List;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.sample.emp_management.domain.Employee;
+import jp.co.sample.emp_management.form.InsertEmployeeForm;
 import jp.co.sample.emp_management.repository.EmployeeRepository;
 
 /**
@@ -69,7 +71,32 @@ public class EmployeeService {
 	 * 
 	 * @param employee:従業員情報
 	 */
-	public void insert(Employee employee) {
+	public void insert(Employee employee, InsertEmployeeForm form) {
+		Integer nextId = employeeRepository.FindLastid() + 1;
+		employee.setId(nextId);
+		
+		
+		//画像データをBase64にエンコード
+		try {
+			StringBuffer data = new StringBuffer();
+			String base64 = new String(Base64.encodeBase64(form.getImage().getBytes()),"ASCII");
+			
+			String fileName = form.getImage().getOriginalFilename();
+			//ファイル拡張子
+			String extension = fileName.substring(fileName.lastIndexOf("."));
+			if(".png".equals(extension)) {
+				data.append("data:image/png;base64,");
+			} else {
+				data.append("data:image/jpeg;base64,");
+			}
+			
+	        data.append(base64);
+	        employee.setImage(data.toString());
+		} catch (Exception e) {
+			System.out.println("画像変換でエラー発生");
+			System.err.println("メッセージ：" + e);
+		}
+		
 		employeeRepository.insert(employee);
 	}
 	
